@@ -1,0 +1,4 @@
+Elastic Search api for tsuru PaaS
+=================================
+
+The api goal is to create a communication pipe between tsuru and Elastic Search service.
