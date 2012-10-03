@@ -1,2 +1,3 @@
 bottle==0.10.11
 WebTest==1.4.0
+gunicorn==0.14.6
