@@ -18,5 +18,9 @@ def unbind():
     return bottle.Response(status=200)
 
 
+def remove():
+    return bottle.Response(status=200)
+
+
 if __name__ == "__main__":
     bottle.run()

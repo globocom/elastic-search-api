@@ -29,6 +29,10 @@ class ApiTestCase(unittest.TestCase):
         response = api.unbind()
         self.assertEqual("", response.body)
 
+    def test_remove_should_return_200(self):
+        response = api.remove()
+        self.assertEqual(200, response.status_code)
+
 
 if __name__ == "__main__":
     unittest.main()
