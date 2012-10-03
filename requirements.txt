@@ -1,1 +1,2 @@
 bottle==0.10.11
+WebTest==1.4.0
