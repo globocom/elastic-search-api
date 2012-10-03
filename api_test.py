@@ -1,10 +1,20 @@
 import api
 import json
+import os
 import unittest
 from webtest import TestApp
 
 
 class ApiTestCase(unittest.TestCase):
+
+    def test_should_have_ELASTIC_SEARCH_URL_defined(self):
+        self.assertIsNotNone(api.ELASTIC_SEARCH_URL)
+
+    def test_ELASTIC_SEARCH_URL_should_be_filled_by_environ_var(self):
+        url = "http://192.169.56.2:9200"
+        os.environ["ELASTIC_SEARCH_URL"] = url
+        reload(api)
+        self.assertEqual(url, api.ELASTIC_SEARCH_URL)
 
     def test_add_should_return_empty_body(self):
         self.assertEqual("", api.add())

@@ -1,9 +1,10 @@
 import bottle
 import json
+import os
 
 
 app = bottle.default_app()
-ELASTIC_SEARCH_URL = "10.2.122.2"
+ELASTIC_SEARCH_URL = os.environ.get("ELASTIC_SEARCH_URL")
 
 
 @bottle.route("/resources", method="POST")
