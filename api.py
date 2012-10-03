@@ -26,7 +26,3 @@ def unbind(name):
 
 def remove():
     return ""
-
-
-if __name__ == "__main__":
-    bottle.run()
