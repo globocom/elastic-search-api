@@ -2,24 +2,29 @@ import bottle
 import json
 
 
+app = bottle.default_app()
 ELASTIC_SEARCH_URL = "10.2.122.2"
 
 
+@bottle.route("/resources", method="POST")
 def add():
-    return bottle.Response(status=201)
+    bottle.response.status = 201
+    return ""
 
 
-def bind():
-    b = json.dumps({"ELASTIC_SEARCH_URL": ELASTIC_SEARCH_URL})
-    return bottle.Response(body=b, status=201)
+@bottle.route("/resources/<name>", method="POST")
+def bind(name):
+    bottle.response.status = 201
+    return json.dumps({"ELASTIC_SEARCH_URL": ELASTIC_SEARCH_URL})
 
 
-def unbind():
-    return bottle.Response(status=200)
+@bottle.route("/resources/<name>", method="DELETE")
+def unbind(name):
+    return ""
 
 
 def remove():
-    return bottle.Response(status=200)
+    return ""
 
 
 if __name__ == "__main__":
