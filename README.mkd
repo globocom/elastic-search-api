@@ -8,7 +8,7 @@ Installation
 
 It's really easy to install the API using tsuru.
 
-First, you need to start a new app (I'm assuming you already are authenticated and all setup):
+First, you need to create a new app (I'm assuming you already are authenticated and all setup):
 
     $> tsuru app-create elastic-search-api
     $> git remote add tsuru git@remote-here
