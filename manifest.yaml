@@ -1,0 +1,3 @@
+id: elastic-search
+endpoint:
+  production: ec2-184-73-64-54.compute-1.amazonaws.com
