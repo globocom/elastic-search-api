@@ -1,28 +1,66 @@
-import bottle
 import json
+import socket
+import fcntl
+import struct
 import os
+from flask import Flask
+
+app = Flask(__name__)
+ELASTIC_SEARCH_IP = os.environ.get("ELASTIC_SEARCH_IP")
+
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
 
 
-app = bottle.default_app()
-ELASTIC_SEARCH_URL = os.environ.get("ELASTIC_SEARCH_URL")
+@app.route("/resources", methods=["POST"])
+def add_instance():
+    return '', 201
 
 
-@bottle.route("/resources", method="POST")
-def add():
-    bottle.response.status = 201
-    return ""
+@app.route("/resources/<name>", methods=["DELETE"])
+def remove_instance(name):
+    return "", 200
 
 
-@bottle.route("/resources/<name>", method="POST")
+@app.route("/resources/<name>/bind-app", methods=["POST"])
+def bind_app(name):
+    if ELASTIC_SEARCH_IP:
+        ELASTICSEARCH_HOST = ELASTIC_SEARCH_IP
+    else:
+        ELASTICSEARCH_HOST = get_ip_address('eth0')
+
+    envs = {
+        "ELASTICSEARCH_HOST": ELASTICSEARCH_HOST,
+        "ELASTICSEARCH_PORT": '9200',
+    }
+    return json.dumps(envs), 201
+
+
+@app.route("/resources/<name>/bind", methods=["POST"])
 def bind(name):
-    bottle.response.status = 201
-    return json.dumps({"ELASTIC_SEARCH_URL": ELASTIC_SEARCH_URL})
+    return "", 201
 
 
-@bottle.route("/resources/<name>", method="DELETE")
+@app.route("/resources/<name>/bind-app", methods=["DELETE"])
+def unbind_app(name):
+    return "", 200
+
+
+@app.route("/resources/<name>/bind", methods=["DELETE"])
 def unbind(name):
-    return ""
+    return "", 200
 
 
-def remove():
-    return ""
+@app.route("/resources/<name>/status", methods=["GET"])
+def status(name):
+    # check the status of the instance named "name"
+    return "", 204
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=os.environ.get("PORT", 5000))
