@@ -7,24 +7,28 @@ from webtest import TestApp
 
 class ApiTestCase(unittest.TestCase):
 
-    def test_should_have_ELASTIC_SEARCH_URL_defined(self):
-        self.assertIsNotNone(api.ELASTIC_SEARCH_URL)
+    def test_should_have_ELASTIC_SEARCH_IP_defined(self):
+        self.assertIsNotNone(api.ELASTIC_SEARCH_IP)
 
-    def test_ELASTIC_SEARCH_URL_should_be_filled_by_environ_var(self):
-        url = "http://192.169.56.2:9200"
-        os.environ["ELASTIC_SEARCH_URL"] = url
+    def test_ELASTIC_SEARCH_HOST_should_be_filled_by_environ_var(self):
+        IP = "192.169.56.2"
+
+        os.environ["ELASTIC_SEARCH_IP"] = IP
         reload(api)
-        self.assertEqual(url, api.ELASTIC_SEARCH_URL)
+        self.assertEqual(IP, api.ELASTIC_SEARCH_IP)
 
     def test_add_should_return_empty_body(self):
-        self.assertEqual("", api.add())
+        self.assertEqual(("", 201), api.add_instance())
 
-    def test_bind_should_return_elastic_search_host_as_json_in_body(self):
-        self.assertDictEqual({"ELASTIC_SEARCH_URL": api.ELASTIC_SEARCH_URL},
-                             json.loads(api.bind("test")))
+    def test_bind_should_return_elasticsearch_host_as_json_in_body(self):
+        self.assertDictEqual({"ELASTICSEARCH_HOST": api.ELASTIC_SEARCH_IP,
+                                "ELASTICSEARCH_PORT": "9200"},
+                             json.loads(api.bind_app("test")[0]) )
 
     def test_unbind_body_should_be_empty(self):
-        self.assertEqual("", api.unbind("test"))
+
+        self.assertEqual( ("", 200), api.unbind("test"))
+
 
 
 class ApiRoutesTestCase(unittest.TestCase):
@@ -37,7 +41,7 @@ class ApiRoutesTestCase(unittest.TestCase):
         self.assertEqual(201, response.status_code)
 
     def test_should_post_to_bind_passing_a_name_and_receive_201(self):
-        response = self.app.post("/resources/myappservice")
+        response = self.app.post("/resources/myappservice/bind")
         self.assertEqual(201, response.status_code)
 
     def test_should_delete_to_unbind_and_receive_200(self):
