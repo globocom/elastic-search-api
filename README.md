@@ -1,6 +1,8 @@
 Elastic Search API for tsuru PaaS
 =================================
 
+[![Build Status](https://travis-ci.org/alphagov/elastic-search-api.svg)](https://travis-ci.org/alphagov/elastic-search-api)
+
 The API goal is to create a communication pipe between tsuru and Elastic Search service.
 
 Installation
