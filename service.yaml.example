@@ -1,0 +1,3 @@
+id: elastic-search
+endpoint:
+  production: elasticsearch.example.com

@@ -28,6 +28,9 @@ the `ELASTIC_SEARCH_URL` environment variable, to export that variable using tsu
 
     $> tsuru env-set elastic-search-api ELASTIC_SEARCH_URL=yourelasticsearchurl.com:9200
 
+To generate a service mainifest, copy service.yaml.example to manifest.yaml, changing the endpoint to the correct elastic
+search server.
+
 Now we have to tell tsuru (using crane cmd line) that it has a new service available, do that by running the following:
 
     $> crane create path/to/manifest.yaml
