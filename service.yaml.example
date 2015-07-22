@@ -2,4 +2,4 @@ id: elastic-search
 username: admin
 password: password
 endpoint:
-  production: elasticsearch.example.com:9200
+  production: elasticsearch.example.com
