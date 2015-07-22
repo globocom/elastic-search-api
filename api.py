@@ -3,6 +3,7 @@ import socket
 import fcntl
 import struct
 import os
+import requests
 from flask import Flask, request
 from flask.ext.basicauth import BasicAuth
 
@@ -65,8 +66,12 @@ def bind(name):
 
 @app.route("/resources/<name>/status", methods=["GET"])
 def status(name):
-    # check the status of the instance named "name"
-    return "", 204
+    health_check_url = "http://{0}:{1}/_cluster/health?pretty=true".format(ELASTICSEARCH_IP, ELASTICSEARCH_PORT)
+    es_state = requests.get(health_check_url)
+    if es_state.status_code == 200:
+        return es_state.text, 200
+    else:
+        Flask.abort(500)
 
 
 @app.route("/resources/<name>/bind-app", methods=["DELETE"])
