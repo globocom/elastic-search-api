@@ -6,6 +6,9 @@ from webtest import TestApp
 
 
 class ApiTestCase(unittest.TestCase):
+    def setUp(self):
+        self.app = TestApp(api.app)
+        self.app.authorization = ('Basic', ('admin', 'password'))
 
     def test_should_have_ELASTICSEARCH_IP_defined(self):
         self.assertIsNotNone(api.ELASTICSEARCH_IP)
@@ -18,15 +21,14 @@ class ApiTestCase(unittest.TestCase):
         self.assertEqual(IP, api.ELASTICSEARCH_IP)
 
     def test_add_should_return_empty_body(self):
-        self.assertEqual(("", 201), api.add_instance())
+        self.assertEqual(201, self.app.post("/resources").status_code )
 
     def test_bind_should_return_elasticsearch_host_as_json_in_body(self):
         self.assertDictEqual({"ELASTICSEARCH_HOST": api.ELASTICSEARCH_IP,
                                 "ELASTICSEARCH_PORT": "9200"},
-                             json.loads(api.bind_app("test")[0]) )
+                             json.loads(self.app.post("/resources/example_app/bind-app").body))
 
     def test_unbind_body_should_be_empty(self):
-
         self.assertEqual( ("", 200), api.unbind("test"))
 
 
@@ -35,6 +37,7 @@ class ApiRoutesTestCase(unittest.TestCase):
 
     def setUp(self):
         self.app = TestApp(api.app)
+        self.app.authorization = ('Basic', ('admin', 'password'))
 
     def test_should_return_a_list_of_plans(self):
         response = self.app.get("/resources/plans")

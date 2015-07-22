@@ -4,8 +4,17 @@ import fcntl
 import struct
 import os
 from flask import Flask, request
+from flask.ext.basicauth import BasicAuth
+
 
 app = Flask(__name__)
+
+app.config['BASIC_AUTH_USERNAME'] = os.environ.get("ES_BROKER_USERNAME", 'admin')
+app.config['BASIC_AUTH_PASSWORD'] = os.environ.get("ES_BROKER_PASSWORD", 'password')
+
+basic_auth = BasicAuth(app)
+app.config['BASIC_AUTH_FORCE'] = True
+
 ELASTICSEARCH_IP = os.environ.get("ELASTICSEARCH_IP")
 
 
@@ -21,7 +30,7 @@ def get_ip_address(ifname):
 @app.route("/resources/plans", methods=["GET"])
 def plans():
     plans = [{"name": "shared_data", "description": "shared elasticsearch server"}]
-    return json.dumps(plans)
+    return json.dumps(plans), 200
 
 
 @app.route("/resources", methods=["POST"])
