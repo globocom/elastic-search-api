@@ -3,10 +3,11 @@ import socket
 import fcntl
 import struct
 import os
-from flask import Flask
+from flask import Flask, request
 
 app = Flask(__name__)
-ELASTIC_SEARCH_IP = os.environ.get("ELASTIC_SEARCH_IP")
+ELASTICSEARCH_IP = os.environ.get("ELASTICSEARCH_IP")
+
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -17,9 +18,16 @@ def get_ip_address(ifname):
     )[20:24])
 
 
+@app.route("/resources/plans", methods=["GET"])
+def plans():
+    plans = [{"name": "shared_data", "description": "shared elasticsearch server"}]
+    return json.dumps(plans)
+
+
 @app.route("/resources", methods=["POST"])
 def add_instance():
-    return '', 201
+    # use the given parameters to create the instance
+    return "", 201
 
 
 @app.route("/resources/<name>", methods=["DELETE"])
@@ -29,8 +37,8 @@ def remove_instance(name):
 
 @app.route("/resources/<name>/bind-app", methods=["POST"])
 def bind_app(name):
-    if ELASTIC_SEARCH_IP:
-        ELASTICSEARCH_HOST = ELASTIC_SEARCH_IP
+    if ELASTICSEARCH_IP:
+        ELASTICSEARCH_HOST = ELASTICSEARCH_IP
     else:
         ELASTICSEARCH_HOST = get_ip_address('eth0')
 
@@ -46,6 +54,12 @@ def bind(name):
     return "", 201
 
 
+@app.route("/resources/<name>/status", methods=["GET"])
+def status(name):
+    # check the status of the instance named "name"
+    return "", 204
+
+
 @app.route("/resources/<name>/bind-app", methods=["DELETE"])
 def unbind_app(name):
     return "", 200
@@ -54,12 +68,6 @@ def unbind_app(name):
 @app.route("/resources/<name>/bind", methods=["DELETE"])
 def unbind(name):
     return "", 200
-
-
-@app.route("/resources/<name>/status", methods=["GET"])
-def status(name):
-    # check the status of the instance named "name"
-    return "", 204
 
 
 if __name__ == "__main__":

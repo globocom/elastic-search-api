@@ -7,21 +7,21 @@ from webtest import TestApp
 
 class ApiTestCase(unittest.TestCase):
 
-    def test_should_have_ELASTIC_SEARCH_IP_defined(self):
-        self.assertIsNotNone(api.ELASTIC_SEARCH_IP)
+    def test_should_have_ELASTICSEARCH_IP_defined(self):
+        self.assertIsNotNone(api.ELASTICSEARCH_IP)
 
     def test_ELASTIC_SEARCH_HOST_should_be_filled_by_environ_var(self):
         IP = "192.169.56.2"
 
-        os.environ["ELASTIC_SEARCH_IP"] = IP
+        os.environ["ELASTICSEARCH_IP"] = IP
         reload(api)
-        self.assertEqual(IP, api.ELASTIC_SEARCH_IP)
+        self.assertEqual(IP, api.ELASTICSEARCH_IP)
 
     def test_add_should_return_empty_body(self):
         self.assertEqual(("", 201), api.add_instance())
 
     def test_bind_should_return_elasticsearch_host_as_json_in_body(self):
-        self.assertDictEqual({"ELASTICSEARCH_HOST": api.ELASTIC_SEARCH_IP,
+        self.assertDictEqual({"ELASTICSEARCH_HOST": api.ELASTICSEARCH_IP,
                                 "ELASTICSEARCH_PORT": "9200"},
                              json.loads(api.bind_app("test")[0]) )
 
@@ -35,6 +35,10 @@ class ApiRoutesTestCase(unittest.TestCase):
 
     def setUp(self):
         self.app = TestApp(api.app)
+
+    def test_should_return_a_list_of_plans(self):
+        response = self.app.get("/resources/plans")
+        self.assertEqual(200, response.status_code)
 
     def test_should_post_to_add_and_get_a_201(self):
         response = self.app.post("/resources")
