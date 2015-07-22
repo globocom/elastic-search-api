@@ -16,7 +16,7 @@ basic_auth = BasicAuth(app)
 app.config['BASIC_AUTH_FORCE'] = True
 
 ELASTICSEARCH_IP = os.environ.get("ELASTICSEARCH_IP")
-
+ELASTICSEARCH_PORT = os.environ.get("ELASTICSEARCH_PORT", '9200')
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -53,7 +53,7 @@ def bind_app(name):
 
     envs = {
         "ELASTICSEARCH_HOST": ELASTICSEARCH_HOST,
-        "ELASTICSEARCH_PORT": '9200',
+        "ELASTICSEARCH_PORT": ELASTICSEARCH_PORT,
     }
     return json.dumps(envs), 201
 
