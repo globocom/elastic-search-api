@@ -50,10 +50,10 @@ def bind(name):
 
 @app.route("/resources/<name>/status", methods=["GET"])
 def status(name):
-    health_check_url = "http://{0}:{1}/_cluster/health?pretty=true".format(ELASTICSEARCH_HOST, ELASTICSEARCH_PORT)
-    es_state = requests.get(health_check_url)
+    elasticsearch_url = "http://{0}:{1}/".format(ELASTICSEARCH_HOST, ELASTICSEARCH_PORT)
+    es_state = requests.get(elasticsearch_url)
     if es_state.status_code == 200:
-        return es_state.text, 200
+        return "", 204
     else:
         Flask.abort(500)
 
