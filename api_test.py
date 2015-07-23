@@ -2,6 +2,7 @@ import api
 import json
 import os
 import unittest
+import responses
 from webtest import TestApp
 
 
@@ -54,6 +55,50 @@ class ApiRoutesTestCase(unittest.TestCase):
     def test_should_delete_to_unbind_and_receive_200(self):
         response = self.app.delete("/resources/myappservice")
         self.assertEqual(200, response.status_code)
+
+    @responses.activate
+    def test_status_OK(self):
+        HOST = "1.2.3.4"
+        os.environ["ELASTICSEARCH_HOST"] = HOST
+        reload(api)
+
+        elasticsearch_healthy = '''
+{
+  "status" : 200,
+  "name" : "Briquette",
+  "cluster_name" : "elasticsearch",
+  "version" : {
+    "number" : "1.6.0",
+    "build_hash" : "cdd3ac4dde4f69524ec0a14de3828cb95bbb86d0",
+    "build_timestamp" : "2015-06-09T13:36:34Z",
+    "build_snapshot" : false,
+    "lucene_version" : "4.10.4"
+  },
+  "tagline" : "You Know, for Search"
+}
+        '''
+
+        responses.add(responses.GET, 'http://1.2.3.4:9200/',
+                  body=elasticsearch_healthy, status=200,
+                  content_type='application/json')
+
+        response = self.app.get("/resources/myappservice/status")
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(204, response.status_code)
+
+    @responses.activate
+    def test_status_error(self):
+        HOST = "1.2.3.4"
+        os.environ["ELASTICSEARCH_HOST"] = HOST
+        reload(api)
+
+        responses.add(responses.GET, 'http://1.2.3.4:9200/',
+                  body='broken', status=404,
+                  content_type='application/json')
+
+        response = self.app.get("/resources/myappservice/status", status = 500)
+        self.assertEqual(len(responses.calls), 1)
+        self.assertEqual(500, response.status_code)
 
 
 if __name__ == "__main__":
