@@ -1,7 +1,4 @@
 import json
-import socket
-import fcntl
-import struct
 import os
 import requests
 from flask import Flask, request
@@ -16,16 +13,8 @@ app.config['BASIC_AUTH_PASSWORD'] = os.environ.get("ES_BROKER_PASSWORD", 'passwo
 basic_auth = BasicAuth(app)
 app.config['BASIC_AUTH_FORCE'] = True
 
-ELASTICSEARCH_IP = os.environ.get("ELASTICSEARCH_IP")
+ELASTICSEARCH_HOST = os.environ.get("ELASTICSEARCH_HOST")
 ELASTICSEARCH_PORT = os.environ.get("ELASTICSEARCH_PORT", '9200')
-
-def get_ip_address(ifname):
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    return socket.inet_ntoa(fcntl.ioctl(
-        s.fileno(),
-        0x8915,  # SIOCGIFADDR
-        struct.pack('256s', ifname[:15])
-    )[20:24])
 
 
 @app.route("/resources/plans", methods=["GET"])
@@ -47,11 +36,6 @@ def remove_instance(name):
 
 @app.route("/resources/<name>/bind-app", methods=["POST"])
 def bind_app(name):
-    if ELASTICSEARCH_IP:
-        ELASTICSEARCH_HOST = ELASTICSEARCH_IP
-    else:
-        ELASTICSEARCH_HOST = get_ip_address('eth0')
-
     envs = {
         "ELASTICSEARCH_HOST": ELASTICSEARCH_HOST,
         "ELASTICSEARCH_PORT": ELASTICSEARCH_PORT,
@@ -66,7 +50,7 @@ def bind(name):
 
 @app.route("/resources/<name>/status", methods=["GET"])
 def status(name):
-    health_check_url = "http://{0}:{1}/_cluster/health?pretty=true".format(ELASTICSEARCH_IP, ELASTICSEARCH_PORT)
+    health_check_url = "http://{0}:{1}/_cluster/health?pretty=true".format(ELASTICSEARCH_HOST, ELASTICSEARCH_PORT)
     es_state = requests.get(health_check_url)
     if es_state.status_code == 200:
         return es_state.text, 200

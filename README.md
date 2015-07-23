@@ -33,9 +33,9 @@ Configuration
 -------------
 
 With the API set up, you should tell it where the Elasticsearch instance is, for that you should use
-the `ELASTICSEARCH_IP` environment variable, to export that variable using tsuru, run the following command:
+the `ELASTICSEARCH_HOST` environment variable, to export that variable using tsuru, run the following command:
 
-    $> tsuru env-set elastic-search-api ELASTICSEARCH_IP=yourelasticsearchurl.com
+    $> tsuru env-set elastic-search-api ELASTICSEARCH_HOST=yourelasticsearchurl.com
 
 If your elasticsearch server is running on a port other than 9200 you can change the port by setting an environment variable:
 

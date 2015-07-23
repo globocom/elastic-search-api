@@ -10,21 +10,21 @@ class ApiTestCase(unittest.TestCase):
         self.app = TestApp(api.app)
         self.app.authorization = ('Basic', ('admin', 'password'))
 
-    def test_should_have_ELASTICSEARCH_IP_defined(self):
-        self.assertIsNotNone(api.ELASTICSEARCH_IP)
+    def test_should_have_ELASTICSEARCH_HOST_defined(self):
+        self.assertIsNotNone(api.ELASTICSEARCH_HOST)
 
     def test_ELASTIC_SEARCH_HOST_should_be_filled_by_environ_var(self):
         IP = "192.169.56.2"
 
-        os.environ["ELASTICSEARCH_IP"] = IP
+        os.environ["ELASTICSEARCH_HOST"] = IP
         reload(api)
-        self.assertEqual(IP, api.ELASTICSEARCH_IP)
+        self.assertEqual(IP, api.ELASTICSEARCH_HOST)
 
     def test_add_should_return_empty_body(self):
         self.assertEqual(201, self.app.post("/resources").status_code )
 
     def test_bind_should_return_elasticsearch_host_as_json_in_body(self):
-        self.assertDictEqual({"ELASTICSEARCH_HOST": api.ELASTICSEARCH_IP,
+        self.assertDictEqual({"ELASTICSEARCH_HOST": api.ELASTICSEARCH_HOST,
                                 "ELASTICSEARCH_PORT": "9200"},
                              json.loads(self.app.post("/resources/example_app/bind-app").body))
 
